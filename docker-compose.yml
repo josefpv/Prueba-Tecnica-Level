@@ -1,0 +1,44 @@
+version: "3"
+services:
+  nginx:
+    depends_on:
+      - web
+      - api
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:80"
+  web:
+    stdin_open: true
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    volumes:
+      - /home/node/app/node_modules
+      - ./web:/home/node/app
+    environment:
+      - WDS_SOCKET_PORT=0
+  db:
+    image: mysql:5.7
+    platform: linux/x86_64
+    container_name: db
+    environment:
+      - MYSQL_ROOT_PASSWORD=level123
+      - MYSQL_DATABASE=test_tecnico
+      - MYSQL_USER=level
+      - MYSQL_PASSWORD=level123
+    ports:
+      - "6033:3306"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+  api:
+    depends_on:
+      - db
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - /home/node/app/node_modules
+      - ./api:/home/node/app

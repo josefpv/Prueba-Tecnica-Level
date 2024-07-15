@@ -1,0 +1,8 @@
+{
+  "urlBase": "http://localhost:4000/api/v1",
+  "fetchLibros": "/libros",
+  "fetchAutores": "/autores",
+  "fetchAutor": "/autores",
+  "registraAutor": "/autores/nuevo",
+  "registraLibro": "/libros/nuevo"
+}
