@@ -9,6 +9,12 @@ const validaBody = (parametros, body) => {
   return resultado;
 };
 
+const validarEmail = (email) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};
+
 module.exports = {
   validaBody,
+  validarEmail,
 };

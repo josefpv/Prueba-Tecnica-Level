@@ -2,6 +2,7 @@ const autoresModel = require("./../models/autoresModel");
 const librosModel = require("./../models/librosModel");
 const validaInputs = require("./../utils/validaInputs");
 const Fn = require("./../utils/rut");
+const moment = require("moment");
 
 const fetchAutores = async (req, res) => {
   try {
@@ -75,6 +76,38 @@ const registraAutor = async (req, res) => {
           ", "
         )}`,
       });
+    }
+
+    if (!Fn.validaRut(`${rut}-${dv}`) || rut == 0) {
+      return res.status(400).send({ error: "El RUT ingresado es invalido." });
+    }
+
+    if (!nombreCompleto || nombreCompleto == "") {
+      return res
+        .status(400)
+        .send({ error: "El nombre completo es requerido." });
+    }
+
+    if (!moment(fechaNacimiento, "YYYY-MM-DD").isValid()) {
+      return res
+        .status(400)
+        .send({ error: "La fecha de ingresada no es valida." });
+    }
+
+    if (!fechaNacimiento || fechaNacimiento == "") {
+      return res
+        .status(400)
+        .send({ error: "La fecha de nacimiento es requerida." });
+    }
+
+    if (!email || email == "") {
+      return res.status(400).send({ error: "El email es requerido." });
+    }
+
+    if (!validaInputs.validarEmail(email)) {
+      return res
+        .status(400)
+        .send({ error: "El email ingresado no es valido." });
     }
 
     //validar que NO exista autor

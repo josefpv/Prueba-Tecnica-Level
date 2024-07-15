@@ -1,6 +1,8 @@
 const librosModel = require("./../models/librosModel");
 const autorModel = require("./../models/autoresModel");
 const validaInputs = require("./../utils/validaInputs");
+const Fn = require("./../utils/rut");
+const moment = require("moment");
 
 const fetchLibros = async (req, res) => {
   try {
@@ -38,6 +40,26 @@ const registraLibro = async (req, res) => {
     }
     const { titulo, year, genero, numeroPaginas, autorRut } = req.body;
 
+    if (!titulo || titulo == "") {
+      return res.status(400).send({ error: `El titulo es requerido` });
+    }
+    if (isNaN(year) || year == 0 || !moment(year, "YYYY").isValid()) {
+      return res.status(400).send({ error: `El año es requerido` });
+    }
+    if (!genero || genero == "") {
+      return res.status(400).send({ error: `El genero es requerido` });
+    }
+
+    if (isNaN(numeroPaginas) || numeroPaginas == "") {
+      return res
+        .status(400)
+        .send({ error: `El nuúmero de páginas es requerido` });
+    }
+
+    if (!Fn.validaRut(autorRut) || autorRut == "") {
+      return res.status(400).send({ error: "El RUT ingresado es invalido." });
+    }
+
     const rutSinDV = autorRut.split("-")[0];
     //valida que el autor exista
     const autorDatos = await autorModel.fetchAutorRut(rutSinDV);
@@ -47,7 +69,6 @@ const registraLibro = async (req, res) => {
 
     //valida que no exceda cantidad de libros no > 10
     const cantidadLibros = await librosModel.fetchCantidadLibrosAutor(rutSinDV);
-    console.log(cantidadLibros);
     if (parseInt(cantidadLibros[0].total) >= 10) {
       return res.status(400).send({
         error: `El autor ha alcanzado la cantidad máxima (10) de libros.`,
